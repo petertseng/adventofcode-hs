@@ -1,0 +1,26 @@
+name: adventofcode
+version: 1.0
+build-type: Simple
+
+-- cabal: The field 'build-depends: adventofcode' refers to a library which is
+-- defined within the same package. To use this feature the package must specify
+-- at least 'cabal-version: >= 1.8'.
+cabal-version: >= 1.8
+
+library
+  hs-source-dirs:  lib
+  exposed-modules: AdventOfCode
+  ghc-options:     -Wall
+  build-depends:   base
+
+executable 01_count_parens
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        01_count_parens.hs
+  ghc-options:    -Wall
+
+executable 02_presents
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        02_presents.hs
+  ghc-options:    -Wall
