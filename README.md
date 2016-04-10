@@ -16,7 +16,7 @@ In general, all solutions can be invoked in both of the following ways:
 
 Some may additionally support other ways:
 
-* None yet.
+* 4 (Advent Coins): Pass the secret key in ARGV.
 
 ## Highlights
 

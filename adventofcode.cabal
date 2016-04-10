@@ -30,3 +30,9 @@ executable 03_delivery_grid
   hs-source-dirs: bin
   main-is:        03_delivery_grid.hs
   ghc-options:    -Wall
+
+executable 04_advent_coins
+  build-depends:  base, bytestring, cryptohash-md5, directory
+  hs-source-dirs: bin
+  main-is:        04_advent_coins.hs
+  ghc-options:    -Wall
