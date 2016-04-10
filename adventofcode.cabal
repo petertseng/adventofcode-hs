@@ -36,3 +36,9 @@ executable 04_advent_coins
   hs-source-dirs: bin
   main-is:        04_advent_coins.hs
   ghc-options:    -Wall
+
+executable 05_nice_strings
+  build-depends:  base, adventofcode, containers
+  hs-source-dirs: bin
+  main-is:        05_nice_strings.hs
+  ghc-options:    -Wall
