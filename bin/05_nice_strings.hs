@@ -1,21 +1,15 @@
 import AdventOfCode (readInputFile)
 
-import Data.List (isInfixOf, tails)
+-- Tried some quick comparisons.
+-- Text.Regex.Posix is about 0.029 s
+-- Text.Regex.PCRE is about 0.021 s
+import Text.Regex.PCRE ((=~))
 
 nice1 :: String -> Bool
-nice1 s = count (`elem` "aeiou") s >= 3 && not (any bad pairs) && any (uncurry (==)) pairs
-  where bad ('a', 'b') = True
-        bad ('c', 'd') = True
-        bad ('p', 'q') = True
-        bad ('x', 'y') = True
-        bad _          = False
-        pairs = zip s (drop 1 s)
+nice1 s = not (s =~ "ab|cd|pq|xy") && s =~ "(.)\\1" && s =~ "(.*[aeiou]){3}"
 
 nice2 :: String -> Bool
-nice2 s = aba && any pairRepeats (tails s)
-  where aba = any (uncurry (==)) (zip s (drop 2 s))
-        pairRepeats (a:b:xs) = [a, b] `isInfixOf` xs
-        pairRepeats _ = False
+nice2 s = s =~ "(.).\\1" && s =~ "(..).*\\1"
 
 count :: (a -> Bool) -> [a] -> Int
 count f = length . filter f
