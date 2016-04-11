@@ -42,3 +42,9 @@ executable 05_nice_strings
   hs-source-dirs: bin
   main-is:        05_nice_strings.hs
   ghc-options:    -Wall
+
+executable 06_light_grid
+  build-depends:  base, adventofcode, array
+  hs-source-dirs: bin
+  main-is:        06_light_grid.hs
+  ghc-options:    -Wall
