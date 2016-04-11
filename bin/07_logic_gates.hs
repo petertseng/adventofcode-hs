@@ -23,8 +23,8 @@ value circuit name = do
     Just v  -> return v
     Nothing -> do
       let comp = case SMap.lookup name circuit of
-            Just (Wire i)         -> unOp id i
-            Just (NotGate i)      -> unOp complement i
+            Just (Wire i)         -> valueI i
+            Just (NotGate i)      -> fmap complement (valueI i)
             Just (AndGate a b)    -> binOp (.&.) a b
             Just (OrGate a b)     -> binOp (.|.) a b
             Just (LShiftGate a b) -> binOp shiftL16 a b
@@ -37,9 +37,6 @@ value circuit name = do
           val1 <- valueI a
           val2 <- valueI b
           return (op val1 val2)
-        unOp op a = do
-          val <- valueI a
-          return (op val)
         valueI (Constant i) = return i
         valueI (Name s)     = value circuit s
 
