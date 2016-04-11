@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 import AdventOfCode (readInputFile)
 
 import Control.Monad.State (State, evalState, get, put, runState)
@@ -19,14 +17,22 @@ data Gate = Wire Input
           | RShiftGate Input Input
 
 value :: SMap.Map String Gate -> String -> State (Map.Map String Word16) Word16
-value circuit name = case SMap.lookup name circuit of
-  Just (Wire i)         -> unOp id i
-  Just (NotGate i)      -> unOp complement i
-  Just (AndGate a b)    -> binOp (.&.) a b
-  Just (OrGate a b)     -> binOp (.|.) a b
-  Just (LShiftGate a b) -> binOp shiftL16 a b
-  Just (RShiftGate a b) -> binOp shiftR16 a b
-  Nothing -> error (name ++ " not in circuit")
+value circuit name = do
+  cache <- get
+  case Map.lookup name cache of
+    Just v  -> return v
+    Nothing -> do
+      let comp = case SMap.lookup name circuit of
+            Just (Wire i)         -> unOp id i
+            Just (NotGate i)      -> unOp complement i
+            Just (AndGate a b)    -> binOp (.&.) a b
+            Just (OrGate a b)     -> binOp (.|.) a b
+            Just (LShiftGate a b) -> binOp shiftL16 a b
+            Just (RShiftGate a b) -> binOp shiftR16 a b
+            Nothing -> error (name ++ " not in circuit")
+      let (v, c) = runState comp cache
+      put (Map.insert name v c)
+      return v
   where binOp op a b = do
           val1 <- valueI a
           val2 <- valueI b
@@ -35,14 +41,7 @@ value circuit name = case SMap.lookup name circuit of
           val <- valueI a
           return (op val)
         valueI (Constant i) = return i
-        valueI (Name s) = do
-          cache <- get
-          case Map.lookup s cache of
-            Just v  -> return v
-            Nothing -> do
-              let (v, c) = runState (value circuit s) cache
-              put (Map.insert s v c)
-              return v
+        valueI (Name s)     = value circuit s
 
 shiftL16 :: Word16 -> Word16 -> Word16
 shiftL16 a b = shiftL a (fromIntegral b)
