@@ -13,6 +13,12 @@ library
   ghc-options:     -Wall
   build-depends:   base
 
+library aocpw
+  hs-source-dirs:  lib
+  exposed-modules: AdventOfCode.Password
+  ghc-options:     -Wall
+  build-depends:   base
+
 executable 01_count_parens
   build-depends:  base, adventofcode
   hs-source-dirs: bin
@@ -73,4 +79,10 @@ executable 10_look_and_say
   build-depends:  base, array, directory
   hs-source-dirs: bin
   main-is:        10_look_and_say.hs
+  ghc-options:    -Wall
+
+executable 11_passwords
+  build-depends:  base, adventofcode, aocpw, directory
+  hs-source-dirs: bin
+  main-is:        11_passwords.hs
   ghc-options:    -Wall

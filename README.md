@@ -18,6 +18,7 @@ Some may additionally support other ways:
 
 * 4 (Advent Coins): Pass the secret key in ARGV.
 * 10 (Look and Say): Pass the seed sequence in ARGV.
+* 11 (Passwords): Pass the initial password in ARGV.
 
 ## Highlights
 
