@@ -68,3 +68,9 @@ executable 09_hamiltonian
   hs-source-dirs: bin
   main-is:        09_hamiltonian.hs
   ghc-options:    -Wall
+
+executable 10_look_and_say
+  build-depends:  base, directory
+  hs-source-dirs: bin
+  main-is:        10_look_and_say.hs
+  ghc-options:    -Wall

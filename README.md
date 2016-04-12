@@ -17,6 +17,7 @@ In general, all solutions can be invoked in both of the following ways:
 Some may additionally support other ways:
 
 * 4 (Advent Coins): Pass the secret key in ARGV.
+* 10 (Look and Say): Pass the seed sequence in ARGV.
 
 ## Highlights
 
