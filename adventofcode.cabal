@@ -55,3 +55,9 @@ executable 07_logic_gates
   hs-source-dirs: bin
   main-is:        07_logic_gates.hs
   ghc-options:    -Wall
+
+executable 08_string_overhead
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        08_string_overhead.hs
+  ghc-options:    -Wall
