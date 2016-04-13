@@ -93,3 +93,9 @@ executable 11_passwords
   hs-source-dirs: bin
   main-is:        11_passwords.hs
   ghc-options:    -Wall
+
+executable 12_json_numbers
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        12_json_numbers.hs
+  ghc-options:    -Wall
