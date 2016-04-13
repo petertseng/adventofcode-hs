@@ -55,7 +55,11 @@ main = do
   let l = map (parseDist . words) (lines s)
       dists = distances l
       paths = permutations (places l)
-      totalsCycle = map (totalDistance dists pairsInCycle) paths
+      -- cycles are invariant to rotation,
+      -- so fix the head of the cycle to check fewer of them.
+      firstPlace = head (places l)
+      cycles = filter ((== firstPlace) . head) paths
+      totalsCycle = map (totalDistance dists pairsInCycle) cycles
       totalsPath = map (totalDistance dists pairsInPath) paths
   print (maximum totalsCycle)
   print (maximum totalsPath)
