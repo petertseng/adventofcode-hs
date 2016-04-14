@@ -1,5 +1,6 @@
 import AdventOfCode (readInputFile)
 
+import Data.List (sortOn)
 import Data.Maybe (fromJust)
 
 type Ingredient = ([Int], Int)
@@ -17,6 +18,18 @@ score traits = if any (< 0) traits then 0 else product traits
 
 scaleBy :: Int -> Ingredient -> Ingredient
 scaleBy n (traits, cals) = (map (* n) traits, cals * n)
+
+limitOfFirst :: [[Int]] -> Int
+-- Start from 1 not 0.
+-- My most negative ingredient is the only one with positive durability.
+-- So we need at least one of that ingredient.
+limitOfFirst (i1:is) = case takeWhile ok [1..100] of
+  [] -> 0 -- Even 1 isn't OK?!
+  l -> last l
+  where bests = foldr1 (zipWith max) is
+        ok = all (> 0) . scores
+        scores n = zipWith (+) (map (* n) i1) (map (* (100 - n)) bests)
+limitOfFirst [] = error "need at least one ingredient"
 
 otherTraits :: Ingredient -> [Int]
 otherTraits = fst
@@ -48,12 +61,14 @@ main :: IO ()
 main = do
   s <- readInputFile
   let ingredients = map parseIngredient (lines s)
+      sorted = sortOn (minimum . fst) ingredients
+      limit = limitOfFirst (map otherTraits sorted)
       tries = case length ingredients of
-        4 -> [(a, b, c) | a <- [0..100], b <- [0..(100-a)], c <- [0..(100-a-b)]]
+        4 -> [(a, b, c) | a <- [0..limit], b <- [0..(100-a)], c <- [0..(100-a-b)]]
         3 -> [(a, b, 100 - a - b) | a <- [0..100], b <- [0..(100-a)]]
         2 -> [(a, 100 - a, 0) | a <- [0..100]]
         _ -> error "can't handle ingredient list of size other than 2 through 4."
-      cookies = map (cookie ingredients) tries
+      cookies = map (cookie sorted) tries
       best = maximum . map fst
   print (best cookies)
   print (best (filter ((== 500) . snd) cookies))
