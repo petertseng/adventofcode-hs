@@ -1,20 +1,18 @@
 import AdventOfCode (readInputFile)
 
 import Data.List (sortOn)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, mapMaybe)
 
 type Ingredient = ([Int], Int)
 
-cookie :: [Ingredient] -> (Int, Int, Int) -> (Int, Int)
+cookie :: [Ingredient] -> (Int, Int, Int) -> Maybe (Int, Int)
 cookie ingredients (a, b, c) = cookie' (zipWith scaleBy [a, b, c, d] ingredients)
   where d = 100 - a - b - c
 
-cookie' :: [Ingredient] -> (Int, Int)
-cookie' ingredients = (score traits, sum (map calories ingredients))
+cookie' :: [Ingredient] -> Maybe (Int, Int)
+cookie' ingredients = if any (< 0) traits then Nothing
+                      else Just (product traits, sum (map calories ingredients))
   where traits = foldr1 (zipWith (+)) (map otherTraits ingredients)
-
-score :: [Int] -> Int
-score traits = if any (< 0) traits then 0 else product traits
 
 scaleBy :: Int -> Ingredient -> Ingredient
 scaleBy n (traits, cals) = (map (* n) traits, cals * n)
@@ -73,7 +71,7 @@ main = do
         3 -> [(a, b, 100 - a - b) | a <- [0..100], b <- [0..(100-a)]]
         2 -> [(a, 100 - a, 0) | a <- [0..100]]
         _ -> error "can't handle ingredient list of size other than 2 through 4."
-      cookies = map (cookie sorted) tries
+      cookies = mapMaybe (cookie sorted) tries
       best = maximum . map fst
   print (best cookies)
   print (best (filter ((== 500) . snd) cookies))
