@@ -112,3 +112,9 @@ executable 14_reindeer_race
   hs-source-dirs: bin
   main-is:        14_reindeer_race.hs
   ghc-options:    -Wall
+
+executable 15_cookies
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        15_cookies.hs
+  ghc-options:    -Wall
