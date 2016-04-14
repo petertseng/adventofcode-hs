@@ -106,3 +106,9 @@ executable 13_optimal_seating
   hs-source-dirs: bin
   main-is:        13_optimal_seating.hs
   ghc-options:    -Wall
+
+executable 14_reindeer_race
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        14_reindeer_race.hs
+  ghc-options:    -Wall
