@@ -1,6 +1,6 @@
 import AdventOfCode (readInputFile)
 
-import Data.List (sortOn)
+import Data.List (partition, sortOn)
 import Data.Maybe (fromJust, mapMaybe)
 
 type Ingredient = ([Int], Int)
@@ -72,6 +72,7 @@ main = do
         2 -> [(a, 100 - a, 0) | a <- [0..100]]
         _ -> error "can't handle ingredient list of size other than 2 through 4."
       cookies = mapMaybe (cookie sorted) tries
+      (cookies500, cookies') = partition ((== 500) . snd) cookies
       best = maximum . map fst
-  print (best cookies)
-  print (best (filter ((== 500) . snd) cookies))
+  print (best cookies')
+  print (best cookies500)
