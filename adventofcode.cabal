@@ -130,3 +130,9 @@ executable 16_aunt_sue
   hs-source-dirs: bin
   main-is:        16_aunt_sue.hs
   ghc-options:    -Wall
+
+executable 17_containers
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        17_containers.hs
+  ghc-options:    -Wall
