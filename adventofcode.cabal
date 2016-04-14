@@ -124,3 +124,9 @@ executable 15_cookies
   hs-source-dirs: bin
   main-is:        15_cookies.hs
   ghc-options:    -Wall
+
+executable 16_aunt_sue
+  build-depends:  base, adventofcode, aocsplit, containers
+  hs-source-dirs: bin
+  main-is:        16_aunt_sue.hs
+  ghc-options:    -Wall
