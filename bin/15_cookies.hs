@@ -1,4 +1,5 @@
 import AdventOfCode (readInputFile)
+import AdventOfCode.Split (splitOn)
 
 import Data.List (partition, sortOn)
 import Data.Maybe (fromJust, mapMaybe)
@@ -48,12 +49,6 @@ parseTrait :: String -> (String, Int)
 parseTrait t = case words t of
   [name, value] -> (name, read value)
   _ -> error ("bad trait: " ++ t)
-
-splitOn :: Char -> String -> [String]
-splitOn c s = case dropWhile (== c) s of
-  "" -> []
-  s' -> w : splitOn c s''
-        where (w, s'') = break (== c) s'
 
 main :: IO ()
 main = do

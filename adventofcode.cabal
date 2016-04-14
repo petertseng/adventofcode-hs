@@ -19,6 +19,12 @@ library aocpw
   ghc-options:     -Wall
   build-depends:   base
 
+library aocsplit
+  hs-source-dirs:  lib
+  exposed-modules: AdventOfCode.Split
+  ghc-options:     -Wall
+  build-depends:   base
+
 test-suite test-password
   type:           exitcode-stdio-1.0
   hs-source-dirs: test
@@ -33,7 +39,7 @@ executable 01_count_parens
   ghc-options:    -Wall
 
 executable 02_presents
-  build-depends:  base, adventofcode
+  build-depends:  base, adventofcode, aocsplit
   hs-source-dirs: bin
   main-is:        02_presents.hs
   ghc-options:    -Wall
@@ -114,7 +120,7 @@ executable 14_reindeer_race
   ghc-options:    -Wall
 
 executable 15_cookies
-  build-depends:  base, adventofcode
+  build-depends:  base, adventofcode, aocsplit
   hs-source-dirs: bin
   main-is:        15_cookies.hs
   ghc-options:    -Wall

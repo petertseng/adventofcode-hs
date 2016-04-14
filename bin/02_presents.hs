@@ -1,4 +1,5 @@
 import AdventOfCode (readInputFile)
+import AdventOfCode.Split (splitOn)
 
 import Data.List (sort, tails)
 
@@ -13,12 +14,6 @@ ribbon dimensions = smallestPerimeter + volume
 
 sumBy :: (a -> Int) -> [a] -> Int
 sumBy f = sum . map f
-
-splitOn :: Char -> String -> [String]
-splitOn c s = case dropWhile (== c) s of
-  "" -> []
-  s' -> w : splitOn c s''
-        where (w, s'') = break (== c) s'
 
 main :: IO ()
 main = do
