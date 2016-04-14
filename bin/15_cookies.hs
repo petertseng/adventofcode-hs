@@ -1,5 +1,5 @@
 import AdventOfCode (readInputFile)
-import AdventOfCode.Split (splitOn)
+import AdventOfCode.Split (splitOn, splitOnOne)
 
 import Data.List (partition, sortOn)
 import Data.Maybe (fromJust, mapMaybe)
@@ -39,11 +39,10 @@ calories = snd
 -- Assumes that traits come in the same order in all ingredients.
 parseIngredient :: String -> Ingredient
 parseIngredient s = (otherTraits', calories')
-  where calories' = fromJust (lookup "calories" traitsAndNames)
-        otherTraits' = map snd (filter ((/= "calories") . fst) traitsAndNames)
-        traitsAndNames = case splitOn ':' s of
-          [_, traits] -> map parseTrait (splitOn ',' traits)
-          _ -> error ("bad cookie: " ++ s)
+  where calories' = fromJust (lookup "calories" traits)
+        otherTraits' = map snd (filter ((/= "calories") . fst) traits)
+        (_, rawTraits) = splitOnOne ':' s
+        traits = map parseTrait (splitOn ',' rawTraits)
 
 parseTrait :: String -> (String, Int)
 parseTrait t = case words t of
