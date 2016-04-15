@@ -136,3 +136,9 @@ executable 17_containers
   hs-source-dirs: bin
   main-is:        17_containers.hs
   ghc-options:    -Wall
+
+executable 18_game_of_life
+  build-depends:  base, adventofcode, array
+  hs-source-dirs: bin
+  main-is:        18_game_of_life.hs
+  ghc-options:    -Wall
