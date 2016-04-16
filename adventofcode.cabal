@@ -155,3 +155,9 @@ executable 20_factors
   hs-source-dirs: bin
   main-is:        20_factors.hs
   ghc-options:    -Wall
+
+executable 21_rpg
+  build-depends:  base
+  hs-source-dirs: bin
+  main-is:        21_rpg.hs
+  ghc-options:    -Wall
