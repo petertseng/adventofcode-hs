@@ -142,3 +142,10 @@ executable 18_game_of_life
   hs-source-dirs: bin
   main-is:        18_game_of_life.hs
   ghc-options:    -Wall
+
+executable 19_molecule_replacement
+  -- Data.Map.Strict added in containers 0.5.0.0
+  build-depends:  base, adventofcode, containers >= 0.5
+  hs-source-dirs: bin
+  main-is:        19_molecule_replacement.hs
+  ghc-options:    -Wall
