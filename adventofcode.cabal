@@ -149,3 +149,9 @@ executable 19_molecule_replacement
   hs-source-dirs: bin
   main-is:        19_molecule_replacement.hs
   ghc-options:    -Wall
+
+executable 20_factors
+  build-depends:  base, directory
+  hs-source-dirs: bin
+  main-is:        20_factors.hs
+  ghc-options:    -Wall
