@@ -1,9 +1,9 @@
-import Control.Monad (forM, forM_)
+import Control.Monad (forM_)
 import Control.Monad.ST (ST, runST)
 import Data.Array.MArray (newArray, readArray, writeArray)
 import Data.Array.ST (STUArray)
 import Data.List (find)
-import Data.Maybe (catMaybes, fromMaybe, fromJust, listToMaybe)
+import Data.Maybe (fromMaybe, fromJust)
 import System.Directory (doesFileExist)
 import System.Environment (getArgs)
 
@@ -52,11 +52,21 @@ houseLowerBound target = binarySearch (valid . fromIntegral) (ceiling guess)
         guess = target / (e ** gamma * log (log target))
         e = exp 1
 
+-- http://stackoverflow.com/questions/24226074/ gives better ways to do this.
+-- I am not yet at a place to understand these.
+findM :: (Monad m) => [a] -> (a -> m (Maybe b)) -> m (Maybe b)
+findM [] _ = return Nothing
+findM (x:xs) f = do
+  result <- f x
+  case result of
+    Just _  -> return result
+    Nothing -> findM xs f
+
 runElves :: Int -> Int -> Int -> Maybe Int -> Int
 runElves target lower upper limit = runST $ do
   arr <- newArray (lower, upper) 0 :: ST s (STUArray s Int Int)
 
-  elves <- forM [1..upper] $ \elf -> do
+  winner <- findM [1..upper] $ \elf -> do
     let skipped    = if elf < lower then (lower - 1) `div` elf else 0
         startHouse = if elf < lower then (skipped + 1) * elf   else elf
         houses = [startHouse, startHouse + elf .. upper]
@@ -78,7 +88,7 @@ runElves target lower upper limit = runST $ do
       else return Nothing
 
   -- The Nothing case is actually impossible, but that's OK.
-  return (fromMaybe upper (listToMaybe (catMaybes elves)))
+  return (fromMaybe upper winner)
 
 binarySearch :: (Int -> Bool) -> Int -> Int -> Int
 binarySearch _ lower upper | lower == upper = lower
