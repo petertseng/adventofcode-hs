@@ -1,5 +1,9 @@
+import Control.Monad (forM, forM_)
+import Control.Monad.ST (ST, runST)
+import Data.Array.MArray (newArray, readArray, writeArray)
+import Data.Array.ST (STUArray)
 import Data.List (find)
-import Data.Maybe (fromMaybe, fromJust)
+import Data.Maybe (catMaybes, fromMaybe, fromJust, listToMaybe)
 import System.Directory (doesFileExist)
 import System.Environment (getArgs)
 
@@ -48,6 +52,34 @@ houseLowerBound target = binarySearch (valid . fromIntegral) (ceiling guess)
         guess = target / (e ** gamma * log (log target))
         e = exp 1
 
+runElves :: Int -> Int -> Int -> Maybe Int -> Int
+runElves target lower upper limit = runST $ do
+  arr <- newArray (lower, upper) 0 :: ST s (STUArray s Int Int)
+
+  elves <- forM [1..upper] $ \elf -> do
+    let skipped    = if elf < lower then (lower - 1) `div` elf else 0
+        startHouse = if elf < lower then (skipped + 1) * elf   else elf
+        houses = [startHouse, startHouse + elf .. upper]
+        houses' = case limit of
+          Just n  -> take (n - skipped) houses
+          Nothing -> houses
+    forM_ houses' $ \house -> do
+      val <- readArray arr house
+      writeArray arr house (val + elf)
+
+    if elf >= lower
+      then do
+        val <- readArray arr elf
+        if val >= target
+          -- It's safe to terminate now.
+          -- No later elf can possibly visit this house.
+          then return (Just elf)
+          else return Nothing
+      else return Nothing
+
+  -- The Nothing case is actually impossible, but that's OK.
+  return (fromMaybe upper (listToMaybe (catMaybes elves)))
+
 binarySearch :: (Int -> Bool) -> Int -> Int -> Int
 binarySearch _ lower upper | lower == upper = lower
 binarySearch valid lower upper | lower + 1 == upper =
@@ -58,8 +90,7 @@ binarySearch valid lower upper =
   in binarySearch valid lower' upper'
 
 firstHouse :: Int -> Int -> Maybe Int -> Int
-firstHouse target multiplier limit =
-  fromMaybe upper (find ((>= target) . (* multiplier) . gifts limit) [lower..upper])
+firstHouse target multiplier limit = runElves (ceiling elfValue) lower upper limit
   where upper = houseUpperBound (\n -> gifts limit n * multiplier >= target)
         lower = houseLowerBound elfValue upper
         elfValue = fromIntegral target / fromIntegral multiplier
