@@ -1,5 +1,5 @@
 import Data.List (find)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromMaybe, fromJust)
 import System.Directory (doesFileExist)
 import System.Environment (getArgs)
 
@@ -20,6 +20,22 @@ giftsAt (Just limit) house factor1 = factor1Val + factor2Val
   where factor2 = house `div` factor1
         factor1Val = if factor2 <= limit then factor1 else 0
         factor2Val = if factor1 <= limit && factor1 /= factor2 then factor2 else 0
+
+smallestGreaterFactorial :: (Int -> Bool) -> (Int, Int)
+smallestGreaterFactorial valid = fromJust (find (valid . snd) factorials)
+  where factorials = map (\n -> (n, factorial n)) [1..]
+
+factorial :: Int -> Int
+factorial n = product [1..n]
+
+houseUpperBound :: (Int -> Bool) -> Int
+houseUpperBound valid = foldr (decrease valid) bound [1..n]
+  where (n, bound) = smallestGreaterFactorial valid
+
+decrease :: (Int -> Bool) -> Int -> Int -> Int
+decrease valid factor bound = fromJust (find valid candidates)
+  where boundWithout = bound `div` factor
+        candidates = map (* boundWithout) [1..]
 
 -- Euler-Mascheroni constant
 gamma :: Double
@@ -43,8 +59,9 @@ binarySearch valid lower upper =
 
 firstHouse :: Int -> Int -> Maybe Int -> Int
 firstHouse target multiplier limit =
-  fromJust (find ((>= target) . (* multiplier) . gifts limit) [lower..])
-  where lower = houseLowerBound elfValue target
+  fromMaybe upper (find ((>= target) . (* multiplier) . gifts limit) [lower..upper])
+  where upper = houseUpperBound (\n -> gifts limit n * multiplier >= target)
+        lower = houseLowerBound elfValue upper
         elfValue = fromIntegral target / fromIntegral multiplier
 
 main :: IO ()
