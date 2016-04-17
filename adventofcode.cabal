@@ -179,3 +179,9 @@ executable 24_partition
   hs-source-dirs: bin
   main-is:        24_partition.hs
   ghc-options:    -Wall
+
+executable 25_triangular
+  build-depends:  base
+  hs-source-dirs: bin
+  main-is:        25_triangular.hs
+  ghc-options:    -Wall
