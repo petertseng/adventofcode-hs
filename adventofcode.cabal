@@ -173,3 +173,9 @@ executable 23_asm
   hs-source-dirs: bin
   main-is:        23_asm.hs
   ghc-options:    -Wall
+
+executable 24_partition
+  build-depends:  base, adventofcode
+  hs-source-dirs: bin
+  main-is:        24_partition.hs
+  ghc-options:    -Wall
