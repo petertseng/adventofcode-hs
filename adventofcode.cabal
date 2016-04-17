@@ -161,3 +161,9 @@ executable 21_rpg
   hs-source-dirs: bin
   main-is:        21_rpg.hs
   ghc-options:    -Wall
+
+executable 22_wizard
+  build-depends:  base, containers, mtl
+  hs-source-dirs: bin
+  main-is:        22_wizard.hs
+  ghc-options:    -Wall
