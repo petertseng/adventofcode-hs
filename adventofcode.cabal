@@ -167,3 +167,9 @@ executable 22_wizard
   hs-source-dirs: bin
   main-is:        22_wizard.hs
   ghc-options:    -Wall
+
+executable 23_asm
+  build-depends:  base, adventofcode, array
+  hs-source-dirs: bin
+  main-is:        23_asm.hs
+  ghc-options:    -Wall
