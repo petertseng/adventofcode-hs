@@ -3,7 +3,7 @@ module AdventOfCode.Split (
 , splitOnOne
 ) where
 
-import Control.Arrow (first)
+import Control.Arrow (second)
 
 splitOn :: Char -> String -> [String]
 splitOn c s = case dropWhile (== c) s of
@@ -12,6 +12,5 @@ splitOn c s = case dropWhile (== c) s of
         where (w, s'') = break (== c) s'
 
 splitOnOne :: Char -> String -> (String, String)
-splitOnOne _ "" = ("", "")
-splitOnOne c (h:t) = if h == c then ("", t)
-                     else first (h:) (splitOnOne c t)
+-- drop 1 removes c if it was found.
+splitOnOne c = second (drop 1) . break (== c)
