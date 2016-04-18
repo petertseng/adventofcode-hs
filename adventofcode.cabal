@@ -63,7 +63,7 @@ executable 05_nice_strings
   ghc-options:    -Wall
 
 executable 06_light_grid
-  build-depends:  base, adventofcode, array
+  build-depends:  base, adventofcode, aocsplit, array
   hs-source-dirs: bin
   main-is:        06_light_grid.hs
   ghc-options:    -Wall

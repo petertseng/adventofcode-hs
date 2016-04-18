@@ -1,7 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 import AdventOfCode (readInputFile)
+import AdventOfCode.Split (splitOnOne)
 
+import Control.Arrow ((***))
 import Control.Monad (forM_)
 import Control.Monad.ST (ST)
 import Data.Array.Base (UArray)
@@ -72,7 +74,7 @@ parseCoords s = (parseCoord c1, parseCoord c2)
           _ -> error ("invalid coordinates " ++ unwords s)
 
 parseCoord :: String -> Pos
-parseCoord s = let (c1, c2) = break (== ',') s in (read c1, read (tail c2))
+parseCoord = (read *** read) . splitOnOne ','
 
 main :: IO ()
 main = do
