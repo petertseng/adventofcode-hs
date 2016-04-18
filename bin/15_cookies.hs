@@ -22,9 +22,9 @@ limitOfFirst :: [Int] -> Int -> [[Int]] -> Int
 -- Start from 1 not 0.
 -- My most negative ingredient is the only one with positive durability.
 -- So we need at least one of that ingredient.
-limitOfFirst base limit (i1:is) = case takeWhile ok [1..limit] of
-  [] -> 0 -- Even 1 isn't OK?!
-  l -> last l
+limitOfFirst base limit (i1:is) = case dropWhile ok [1..limit] of
+  []  -> limit -- all numbers were OK.
+  h:_ -> h - 1 -- h is first not-OK number, so last OK number must be h - 1.
   where bests = foldr1 (zipWith max) is
         ok = all (> 0) . scores
         scores n = foldr (zipWith (+)) base [map (* n) i1, map (* (limit - n)) bests]
