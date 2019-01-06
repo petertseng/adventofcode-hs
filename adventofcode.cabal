@@ -19,6 +19,13 @@ library aocpw
   ghc-options:     -Wall
   build-depends:   base
 
+test-suite test-password
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        password.hs
+  ghc-options:    -Wall
+  build-depends:  base, aocpw, HUnit
+
 executable 01_count_parens
   build-depends:  base, adventofcode
   hs-source-dirs: bin

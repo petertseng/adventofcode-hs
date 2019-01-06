@@ -74,4 +74,5 @@ install:
   - "sed -i.bak 's/^jobs:.*/jobs: 2/' ${HOME}/.cabal/config"
 script:
   - cabal new-build -w ${HC}
+  - cabal new-test -w ${HC}
   - ghc-pkg list # to debug
