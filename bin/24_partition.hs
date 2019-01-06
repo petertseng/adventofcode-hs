@@ -11,14 +11,12 @@ minNeeded weights target = case foldM add (0, 0) sorted of
         add (w, n) x =
           if w + x >= target then Left (n + 1) else Right (w + x, n + 1)
 
--- http://stackoverflow.com/questions/21265454
+-- https://rosettacode.org/wiki/Combinations#Haskell
 combinations :: Int -> [a] -> [[a]]
-combinations n l = let len = length l
-                   in if n > len then [] else bySize l !! (len - n)
+combinations m xs = bySize xs !! m
  where
-   bySize [] = [[[]]]
-   bySize (x:xs) = let next = bySize xs
-                   in zipWith (++) ([] : next) (map (map (x:)) next ++ [[]])
+   bySize = foldr f ([[]] : repeat [])
+   f x next = zipWith (++) (map (map (x:)) ([]:next)) next
 
 partition :: [Int] -> Int -> Int
 partition weights groups =
