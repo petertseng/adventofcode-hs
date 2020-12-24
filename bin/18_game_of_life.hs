@@ -1,90 +1,60 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TupleSections #-}
 
 import AdventOfCode (readInputFile)
 
-import Control.Monad (forM, forM_, when)
-import Data.Array.IArray (elems)
-import Data.Array.MArray (newListArray, readArray, writeArray)
-import Data.Array.ST (runSTUArray)
-import Data.Bits (shiftL)
-import Data.Int (Int8)
-import Data.Maybe (catMaybes)
+import qualified Data.Array as Arr
+import Data.Array (Array, bounds, listArray)
+import Data.Array.Unboxed (UArray, accumArray, assocs)
+import Data.List (elemIndices)
+import Data.Maybe (mapMaybe)
 
-gameOfLife :: [[Bool]] -> Int -> Bool -> [Int8]
-gameOfLife lights n cornersStuck = elems $ runSTUArray $ do
-  let len = length lights
-  let maxXY = len - 1
-  a <- newListArray ((0, 0), (maxXY, maxXY)) (pack lights)
-  when cornersStuck $
-    forM_ [(y, x) | y <- [0, maxXY], x <- [0, maxXY]] $ \(y, x) ->
-      writeArray a (y, x) 1
+gameOfLife :: Array Int [Int] -> (Int, Int, Int, Int) -> [Int] -> [Int]
+gameOfLife neighs (corner1, corner2, corner3, corner4) = mapMaybe on' . assocs . aliveNeighs neighs
+  where on' (pos, _) | pos == corner1 || pos == corner2 || pos == corner3 || pos == corner4 = Just pos
+        on' (pos, ns) | 5 <= ns && ns <= 7 = Just pos
+        on' (_, _) = Nothing
 
-  let allCells = [(y, x) | y <- [0..maxXY], x <- [0..maxXY]]
+aliveNeighs :: Array Int [Int] -> [Int] -> UArray Int Int
+aliveNeighs neighs = accumArray (+) 0 (bounds neighs) . concatMap oneAndTwos
+  where oneAndTwos pos = (pos, 1) : map (, 2) (neighs Arr.! pos)
 
-  -- Initial setup: Count neighbours.
-  forM_ allCells $ \(y, x) -> do
-    neighbourVals <- mapM (readArray a) (neighbours maxXY (y, x))
-    val <- readArray a (y, x)
-    writeArray a (y, x) (val + shiftL (fromIntegral (countAlive neighbourVals)) 1)
-
-  forM_ [1..n] $ \_ -> do
-    changed <- forM allCells $ \(y, x) -> do
-      val <- readArray a (y, x)
-      let isCorner = (x == 0 || x == maxXY) && (y == 0 || y == maxXY)
-          isAlive = cornersStuck && isCorner || 5 <= val && val <= 7
-      if isAlive /= alive val
-        then return (Just (y, x))
-        else return Nothing
-
-    forM_ (catMaybes changed) $ \(y, x) -> do
-      val <- readArray a (y, x)
-      let delta = if alive val then -2 else 2
-      forM_ (neighboursAndSelf maxXY (y, x)) $ \(ny, nx) -> do
-        nval <- readArray a (ny, nx)
-        writeArray a (ny, nx) (nval + delta)
-
-      val' <- readArray a (y, x)
-      writeArray a (y, x) (val' - (delta `div` 2))
-
-  return a
-
-neighbours :: Int -> (Int, Int) -> [(Int, Int)]
-neighbours maxXY (y, x) =
+neigh :: (Int, Int) -> Int -> Int -> [(Int, Int)]
+neigh (y, x) height width =
   [(ny, nx) | ny <- yrange, nx <- xrange, (ny, nx) /= (y, x)]
-  where (yrange, xrange) = ranges maxXY y x
+  where (yrange, xrange) = ranges (height - 1) (width - 1) y x
 
--- The duplication is regrettable, but does save some time.
-neighboursAndSelf :: Int -> (Int, Int) -> [(Int, Int)]
-neighboursAndSelf maxXY (y, x) = [(ny, nx) | ny <- yrange, nx <- xrange]
-  where (yrange, xrange) = ranges maxXY y x
-
-ranges :: Int -> Int -> Int -> ([Int], [Int])
-ranges maxXY y x = ([yMin..yMax], [xMin..xMax])
+ranges :: Int -> Int -> Int -> Int -> ([Int], [Int])
+ranges maxY maxX y x = ([yMin..yMax], [xMin..xMax])
   where yMin = max (y - 1) 0
-        yMax = min (y + 1) maxXY
+        yMax = min (y + 1) maxY
         xMin = max (x - 1) 0
-        xMax = min (x + 1) maxXY
+        xMax = min (x + 1) maxX
 
--- Packs lights into their byte form:
--- bit 0 is alive/dead
--- bits 1+ are neighbour count
-pack :: [[Bool]] -> [Int8]
-pack = concatMap (map (\b -> if b then 1 else 0))
-
-alive :: Int8 -> Bool
-alive = odd
-
-countAlive :: [Int8] -> Int
-countAlive = length . filter alive
-
-toLight :: Char -> Bool
-toLight '#' = True
-toLight '.' = False
-toLight c = error (c : ": invalid character")
+uniform :: Eq b => (a -> b) -> [a] -> b
+uniform _ [] = error "uniform of empty"
+uniform f (x:xs) = let y = f x in
+  if all ((== y) . f) xs then y else error "non-uniform"
 
 main :: IO ()
 main = do
   s <- readInputFile
-  let rows = map (map toLight) (lines s)
-  print (countAlive (gameOfLife rows 100 False))
-  print (countAlive (gameOfLife rows 100 True))
+  let rows = lines s
+      lights = concat rows
+      width = uniform length rows
+      height = length rows
+      size = width * height
+      maxY = height - 1
+      maxX = width - 1
+      pos (y, x) = y * width + x
+      on = elemIndices '#' lights
+      neighs = listArray (0, size - 1) [map pos (neigh (y, x) height width) | y <- [0 .. maxY], x <- [0 .. maxX]]
+  print (length (iterate (gameOfLife neighs (-1, -1, -1, -1)) on !! 100))
+  let potentialCorners = [
+          ((0, 0), head (head rows))
+        , ((0, maxX), last (head rows))
+        , ((maxY, 0), head (last rows))
+        , ((maxY, maxX), last (last rows))
+        ]
+      on' = [pos p | (p, c) <- potentialCorners, c == '.'] ++ on
+      [c1, c2, c3, c4] = [pos p | (p, _) <- potentialCorners]
+  print (length (iterate (gameOfLife neighs (c1, c2, c3, c4)) on' !! 100))
