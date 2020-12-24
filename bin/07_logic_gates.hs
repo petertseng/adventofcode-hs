@@ -1,10 +1,11 @@
 import AdventOfCode (readInputFile)
 
-import Control.Monad.State (State, evalState, get, put, runState)
 import Data.Bits ((.&.), (.|.), complement, shiftL, shiftR)
 import Data.Char (isDigit, isLower)
+import Data.Function (on)
+import Data.Map (Map)
 import qualified Data.Map as Map
-import qualified Data.Map.Strict as SMap
+import Data.Maybe (fromMaybe)
 import Data.Word (Word16)
 
 data Input = Name String | Constant Word16
@@ -16,29 +17,18 @@ data Gate = Wire Input
           | LShiftGate Input Input
           | RShiftGate Input Input
 
-value :: SMap.Map String Gate -> String -> State (Map.Map String Word16) Word16
-value circuit name = do
-  cache <- get
-  case Map.lookup name cache of
-    Just v  -> return v
-    Nothing -> do
-      let comp = case SMap.lookup name circuit of
-            Just (Wire i)         -> valueI i
-            Just (NotGate i)      -> fmap complement (valueI i)
-            Just (AndGate a b)    -> binOp (.&.) a b
-            Just (OrGate a b)     -> binOp (.|.) a b
-            Just (LShiftGate a b) -> binOp shiftL16 a b
-            Just (RShiftGate a b) -> binOp shiftR16 a b
-            Nothing -> error (name ++ " not in circuit")
-      let (v, c) = runState comp cache
-      put (Map.insert name v c)
-      return v
-  where binOp op a b = do
-          val1 <- valueI a
-          val2 <- valueI b
-          return (op val1 val2)
-        valueI (Constant i) = return i
-        valueI (Name s)     = value circuit s
+values :: Map String Gate -> Map String Word16
+values circuit = vals
+  where vals = Map.map valueG circuit
+        valueG (Wire i)         = valueI i
+        valueG (NotGate i)      = complement (valueI i)
+        valueG (AndGate a b)    = binOp (.&.) a b
+        valueG (OrGate a b)     = binOp (.|.) a b
+        valueG (LShiftGate a b) = binOp shiftL16 a b
+        valueG (RShiftGate a b) = binOp shiftR16 a b
+        valueI (Constant i) = i
+        valueI (Name s)     = fromMaybe (error (s ++ " not in circuit")) (Map.lookup s vals)
+        binOp op = op `on` valueI
 
 shiftL16 :: Word16 -> Word16 -> Word16
 shiftL16 a b = shiftL a (fromIntegral b)
@@ -68,9 +58,8 @@ main :: IO ()
 main = do
   s <- readInputFile
   let gates = map (parseGate . words) (lines s)
-      circuit = SMap.fromList gates
-      a = val circuit "a"
+      circuit = Map.fromList gates
+      a = values circuit Map.! "a"
   print a
   let circuit' = Map.insert "b" (Wire (Constant a)) circuit
-  print (val circuit' "a")
-  where val c s = evalState (value c s) Map.empty
+  print (values circuit' Map.! "a")

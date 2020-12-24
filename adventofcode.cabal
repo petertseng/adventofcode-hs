@@ -69,8 +69,7 @@ executable 06_light_grid
   ghc-options:    -Wall
 
 executable 07_logic_gates
-  -- Data.Map.Strict added in containers 0.5.0.0
-  build-depends:  base, adventofcode, containers >= 0.5, mtl
+  build-depends:  base, adventofcode, containers
   hs-source-dirs: bin
   main-is:        07_logic_gates.hs
   ghc-options:    -Wall
