@@ -45,7 +45,8 @@ executable 02_presents
   ghc-options:    -Wall
 
 executable 03_delivery_grid
-  build-depends:  base, adventofcode, containers
+  -- nubOrd added in containers 0.6.0.1
+  build-depends:  base, adventofcode, containers >= 0.6.0.1
   hs-source-dirs: bin
   main-is:        03_delivery_grid.hs
   ghc-options:    -Wall
