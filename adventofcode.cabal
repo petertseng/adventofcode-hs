@@ -101,7 +101,7 @@ executable 11_passwords
   ghc-options:    -Wall
 
 executable 12_json_numbers
-  build-depends:  base, adventofcode
+  build-depends:  base, adventofcode, json
   hs-source-dirs: bin
   main-is:        12_json_numbers.hs
   ghc-options:    -Wall
